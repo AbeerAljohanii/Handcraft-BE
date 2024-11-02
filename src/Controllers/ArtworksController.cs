@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using Backend_Teamwork.src.DTO;
-using Backend_Teamwork.src.Entities;
 using Backend_Teamwork.src.Services.artwork;
 using Backend_Teamwork.src.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -46,12 +44,14 @@ namespace Backend_Teamwork.src.Controllers
         // Get all
         // End-Point: api/v1/artworks
         [HttpGet]
-        public async Task<ActionResult<List<ArtworkReadDto>>> GetAll(
+        public async Task<ActionResult<List<ArtworksListDto>>> GetAll(
             [FromQuery] PaginationOptions paginationOptions
         )
         {
             var artworkList = await _artworkService.GetAllAsync(paginationOptions);
-            return Ok(artworkList);
+            var totalCount = await _artworkService.GetTotalArtworksCountAsync();
+            var response = new ArtworksListDto { Artworks = artworkList, TotalCount = totalCount };
+            return Ok(response);
         }
 
         // Get by artwork id

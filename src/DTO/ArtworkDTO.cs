@@ -34,6 +34,13 @@ namespace Backend_Teamwork.src.DTO
             public Guid CategoryId { get; set; }
         }
 
+        // List of Artworks
+        public class ArtworksListDto
+        {
+            public List<ArtworkReadDto> Artworks { get; set; }
+            public int TotalCount { get; set; }
+        }
+
         // read data (get data)
         public class ArtworkReadDto
         {

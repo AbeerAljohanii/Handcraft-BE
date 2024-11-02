@@ -43,8 +43,22 @@ builder.Services.AddScoped<IOrderService, OrderService>().AddScoped<OrderReposit
 builder.Services.AddScoped<IWorkshopService, WorkshopService>().AddScoped<WorkshopRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>().AddScoped<BookingRepository>();
 
-//builder.Services.AddScoped<IPaymentService, IPaymentService>().AddScoped<PaymentRepository>();
-
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000") // later when i deployed FE, i need to add it here
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed((host) => true)
+                .AllowCredentials();
+        }
+    );
+});
 
 //add logic for authentication
 builder
@@ -121,6 +135,7 @@ app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors(MyAllowSpecificOrigins); // cors
 
 //use controllers
 app.MapControllers();
