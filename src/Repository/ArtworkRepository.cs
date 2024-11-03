@@ -41,11 +41,6 @@ namespace Backend_Teamwork.src.Repository
                 a.Price >= paginationOptions.LowPrice && a.Price <= paginationOptions.HighPrice
             );
 
-            // pagination
-            artworkSearch = artworkSearch
-                .Skip((paginationOptions.PageNumber - 1) * paginationOptions.PageSize)
-                .Take(paginationOptions.PageSize);
-
             // sort
             artworkSearch = paginationOptions.SortOrder switch
             {
@@ -57,6 +52,11 @@ namespace Backend_Teamwork.src.Repository
                 // name ascending
                 _ => artworkSearch.OrderBy(a => a.Title),
             };
+
+            // pagination
+            artworkSearch = artworkSearch
+                .Skip((paginationOptions.PageNumber - 1) * paginationOptions.PageSize)
+                .Take(paginationOptions.PageSize);
 
             return await artworkSearch.Include(o => o.Category).Include(o => o.User).ToListAsync();
         }
