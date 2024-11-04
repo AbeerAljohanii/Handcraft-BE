@@ -32,6 +32,7 @@ namespace Backend_Teamwork.src.DTO
             ]
             public string Email { get; set; }
 
+            [Required(ErrorMessage = "Password shouldn't be null")]
             [PasswordComplexity]
             public string Password { get; set; }
 
@@ -86,6 +87,7 @@ namespace Backend_Teamwork.src.DTO
             [EmailAddress(ErrorMessage = "Email should be with right format: @gmail.com")]
             public string? Email { get; set; }
 
+            [Required(ErrorMessage = "Password shouldn't be null")]
             [PasswordComplexity]
             public string? Password { get; set; }
 

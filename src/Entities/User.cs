@@ -30,6 +30,7 @@ namespace Backend_Teamwork.src.Entities
         ]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Password shouldn't be null")]
         [PasswordComplexity]
         public string Password { get; set; }
         public string? Description { set; get; }
