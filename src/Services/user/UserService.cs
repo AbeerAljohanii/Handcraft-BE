@@ -59,6 +59,21 @@ namespace Backend_Teamwork.src.Services.user
             {
                 throw CustomException.BadRequest("User data cannot be null.");
             }
+            // Check if the email already exists
+            var existingUserByEmail = await _userRepository.GetByEmailAsync(createDto.Email);
+            if (existingUserByEmail != null)
+            {
+                throw CustomException.BadRequest("Email is already in use.");
+            }
+
+            // Check if the phone number already exists
+            var existingUserByPhoneNumber = await _userRepository.GetByPhoneNumberAsync(
+                createDto.PhoneNumber
+            );
+            if (existingUserByPhoneNumber != null)
+            {
+                throw CustomException.BadRequest("Phone number is already in use.");
+            }
             if (
                 createDto
                     .Role.ToString()
