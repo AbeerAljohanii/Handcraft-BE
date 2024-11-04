@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-
+using ecommerce.src.Utils;
 
 namespace Backend_Teamwork.src.Entities
 {
@@ -30,10 +30,7 @@ namespace Backend_Teamwork.src.Entities
         ]
         public string Email { get; set; }
 
-        [
-            Required(ErrorMessage = "Password shouldn't be null."),
-            MinLength(8, ErrorMessage = "Password should be at at least 8 characters")
-        ]
+        [PasswordComplexity]
         public string Password { get; set; }
         public string? Description { set; get; }
 

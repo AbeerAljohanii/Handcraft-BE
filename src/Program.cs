@@ -13,6 +13,7 @@ using Backend_Teamwork.src.Services.workshop;
 using Backend_Teamwork.src.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using static Backend_Teamwork.src.Entities.User;
@@ -29,7 +30,12 @@ dataSourceBuilder.MapEnum<Status>();
 //add database connection
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
-    options.UseNpgsql(dataSourceBuilder.Build());
+    options
+        .UseNpgsql(dataSourceBuilder.Build())
+        .EnableSensitiveDataLogging()
+        .ConfigureWarnings(warnings =>
+            warnings.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning)
+        );
 });
 
 //add auto-mapper

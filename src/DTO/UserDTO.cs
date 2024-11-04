@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Backend_Teamwork.src.Utils;
+using ecommerce.src.Utils;
 using static Backend_Teamwork.src.Entities.User;
 
 namespace Backend_Teamwork.src.DTO
@@ -31,10 +32,7 @@ namespace Backend_Teamwork.src.DTO
             ]
             public string Email { get; set; }
 
-            [
-                Required(ErrorMessage = "Password shouldn't be null"),
-                MinLength(8, ErrorMessage = "Password should be at at least 8 characters")
-            ]
+            [PasswordComplexity]
             public string Password { get; set; }
 
             [Required(ErrorMessage = "Role shouldn't be null")]
@@ -88,7 +86,7 @@ namespace Backend_Teamwork.src.DTO
             [EmailAddress(ErrorMessage = "Email should be with right format: @gmail.com")]
             public string? Email { get; set; }
 
-            [MinLength(8, ErrorMessage = "Password should be at at least 8 characters")]
+            [PasswordComplexity]
             public string? Password { get; set; }
 
             [MinLength(2, ErrorMessage = "Description should be at at least 2 characters")]
