@@ -61,7 +61,7 @@ namespace Backend_Teamwork.src.Controllers
         }
 
         // POST: api/v1/users
-        [HttpPost]
+        [HttpPost("signup")]
         public async Task<ActionResult<UserReadDto>> SignUp([FromBody] UserCreateDto createDto)
         {
             var UserCreated = await _userService.CreateOneAsync(createDto);

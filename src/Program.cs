@@ -21,21 +21,20 @@ using static Backend_Teamwork.src.Entities.User;
 var builder = WebApplication.CreateBuilder(args);
 
 //connect to database
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(
+NpgsqlDataSourceBuilder dataSourceBuilder = new NpgsqlDataSourceBuilder(
     builder.Configuration.GetConnectionString("Local")
 );
 dataSourceBuilder.MapEnum<UserRole>();
 dataSourceBuilder.MapEnum<Status>();
 
+builder.Services.AddSingleton(dataSourceBuilder);
+
 //add database connection
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
-    options
-        .UseNpgsql(dataSourceBuilder.Build())
-        .EnableSensitiveDataLogging()
-        .ConfigureWarnings(warnings =>
-            warnings.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning)
-        );
+    options.UseNpgsql(dataSourceBuilder.Build());
+    options.ConfigureWarnings(x => x.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning));
 });
 
 //add auto-mapper
