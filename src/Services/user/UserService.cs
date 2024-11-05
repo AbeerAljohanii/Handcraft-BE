@@ -243,7 +243,7 @@ namespace Backend_Teamwork.src.Services.user
 
             if (!isMatched)
             {
-                throw CustomException.UnAuthorized($"Unauthorized access.");
+                throw CustomException.UnAuthorized("Incorrect password.");
             }
 
             var TokenUtil = new TokenUtils(_configuration);

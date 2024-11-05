@@ -97,7 +97,7 @@ namespace Backend_Teamwork.src.Controllers
             return NoContent();
         } // should ask my teammates
 
-        [HttpPut("profile")]
+        [HttpPatch("profile")]
         [Authorize]
         public async Task<ActionResult<bool>> UpdateProfileInformation(
             [FromBody] UserUpdateDto updateDto
