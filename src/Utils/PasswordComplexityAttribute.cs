@@ -9,8 +9,10 @@ namespace ecommerce.src.Utils
         {
             var password = value as string;
 
-            if (password == null)
-                return false;
+            if (string.IsNullOrEmpty(password))
+            {
+                return true; // Skip validation if the password is not provided
+            }
 
             if (password.Length < 8)
                 return false;
