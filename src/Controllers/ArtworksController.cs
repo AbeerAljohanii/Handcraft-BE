@@ -54,6 +54,25 @@ namespace Backend_Teamwork.src.Controllers
             return Ok(response);
         }
 
+        // Get all artworks for the currently logged-in artist
+        // End-Point: api/v1/artworks/my-artworks
+        [HttpGet("my-artworks")]
+        [Authorize(Roles = "Artist")]
+        public async Task<ActionResult<List<ArtworkReadDto>>> GetMyArtworks()
+        {
+            // extract user information
+            var authenticateClaims = HttpContext.User;
+            // get user id from claim
+            var userId = authenticateClaims
+                .FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!
+                .Value;
+            // string => guid
+            var userGuid = new Guid(userId);
+
+            var artworkList = await _artworkService.GetByArtistIdAsync(userGuid);
+            return Ok(artworkList);
+        }
+
         // Get by artwork id
         // End-Point: api/v1/artworks/{id}
         [HttpGet("{id}")]
@@ -76,7 +95,7 @@ namespace Backend_Teamwork.src.Controllers
 
         // Update
         // End-Point: api/v1/artworks/{id}
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize(Roles = "Admin,Artist")]
         public async Task<ActionResult> UpdateOne(
             [FromRoute] Guid id,
