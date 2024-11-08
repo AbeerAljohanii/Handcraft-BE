@@ -77,7 +77,7 @@ namespace Backend_Teamwork.src.DTO
             [Range(1.0, double.MaxValue, ErrorMessage = "Price should be greater than zero.")]
             public decimal? Price { get; set; }
 
-            // public Guid? CategoryId { get; set; } add it later ( cause an issue)
+            public Guid? CategoryId { get; set; }
         }
     }
 }

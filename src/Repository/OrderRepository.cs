@@ -18,12 +18,14 @@ namespace Backend_Teamwork.src.Repository
 
         public async Task<List<Order>> GetAllAsync()
         {
-            // Include User, OrderDetails, Artwork, and Category
             return await _order
-                .Include(o => o.User) // Include User details
-                .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Artwork) // Include Artwork
-                .ThenInclude(a => a.Category) // Include Category if it's a related entity
+                .Include(o => o.User) // Include User details for Order
+                .Include(o => o.OrderDetails) // Include OrderDetails
+                .ThenInclude(od => od.Artwork) // Include Artwork for OrderDetails
+                .ThenInclude(a => a.Category) // Include Category within Artwork
+                .Include(o => o.OrderDetails) // Re-include OrderDetails to chain Artwork's User
+                .ThenInclude(od => od.Artwork) // Target Artwork in OrderDetails
+                .ThenInclude(a => a.User) // Include User within Artwork
                 .ToListAsync();
         }
 
@@ -78,7 +80,7 @@ namespace Backend_Teamwork.src.Repository
             // Query for orders with optional search
             var orderQuery = _order
                 .Include(o => o.OrderDetails) // Include order details
-                .Include(o => o.User) 
+                .Include(o => o.User)
                 .Where(o =>
                     o.ShippingAddress.Contains(paginationOptions.Search)
                     || o.TotalAmount.ToString().Contains(paginationOptions.Search)

@@ -86,7 +86,7 @@ namespace Backend_Teamwork.src.Controllers
             return Ok(token);
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPatch("{id:guid}")]
         [Authorize(Roles = "Admin")] // Only Admin
         public async Task<ActionResult<bool>> UpdateUser(
             [FromRoute] Guid id,
