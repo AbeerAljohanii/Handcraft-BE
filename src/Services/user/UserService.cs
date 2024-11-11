@@ -53,7 +53,10 @@ namespace Backend_Teamwork.src.Services.user
         }
 
         // Creates a new user
-        public async Task<UserReadDto> CreateOneAsync(UserCreateDto createDto)
+        public async Task<UserReadDto> CreateOneAsync(
+            UserCreateDto createDto,
+            bool skipRoleCheck = false
+        )
         {
             if (createDto == null)
             {
@@ -75,7 +78,8 @@ namespace Backend_Teamwork.src.Services.user
                 throw CustomException.BadRequest("Phone number is already in use.");
             }
             if (
-                createDto
+                !skipRoleCheck
+                && createDto
                     .Role.ToString()
                     .Equals(UserRole.Admin.ToString(), StringComparison.OrdinalIgnoreCase)
             )

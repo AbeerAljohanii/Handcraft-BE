@@ -11,7 +11,7 @@ namespace Backend_Teamwork.src.Services.user
         // Task<List<UserReadDto>> GetUsersByPage(PaginationOptions paginationOptions);
 
         // create
-        Task<UserReadDto> CreateOneAsync(UserCreateDto createDto);
+        Task<UserReadDto> CreateOneAsync(UserCreateDto createDto, bool skipRoleCheck);
 
         // Get by id
         //Task<UserReadDto> GetOneByIdAsync(Guid userId);

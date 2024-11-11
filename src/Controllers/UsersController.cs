@@ -64,7 +64,7 @@ namespace Backend_Teamwork.src.Controllers
         [HttpPost("signup")]
         public async Task<ActionResult<UserReadDto>> SignUp([FromBody] UserCreateDto createDto)
         {
-            var UserCreated = await _userService.CreateOneAsync(createDto);
+            var UserCreated = await _userService.CreateOneAsync(createDto, false);
             return CreatedAtAction(nameof(GetUserById), new { id = UserCreated.Id }, UserCreated);
         }
 
@@ -74,7 +74,7 @@ namespace Backend_Teamwork.src.Controllers
         public async Task<ActionResult<UserReadDto>> CreateAdmin([FromBody] UserCreateDto createDto)
         {
             createDto.Role = UserRole.Admin; // Set role as 'Admin'
-            var adminCreated = await _userService.CreateOneAsync(createDto);
+            var adminCreated = await _userService.CreateOneAsync(createDto, true);
             return CreatedAtAction(nameof(GetUserById), new { id = adminCreated.Id }, adminCreated);
         }
 
