@@ -13,7 +13,5 @@ namespace Backend_Teamwork.src.Entities
         ]
         public string Name { set; get; }
 
-        // List of Images associated with this Category
-        public List<Image>? Images { get; set; }
     }
 }

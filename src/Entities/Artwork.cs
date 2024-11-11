@@ -38,7 +38,5 @@ namespace Backend_Teamwork.src.Entities
         // OrderDetails
         public List<OrderDetails>? OrderDetails { get; set; }
 
-        // List of Images associated with this Artwork
-        public List<Image>? Images { get; set; } 
     }
 }
