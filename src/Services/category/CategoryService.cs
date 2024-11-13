@@ -77,14 +77,19 @@ namespace Backend_Teamwork.src.Services.category
             return _mapper.Map<List<Category>, List<CategoryReadDto>>(categories);
         }
 
-        public async Task<CategoryReadDto> CreateAsync(CategoryCreateDto category)
+        public async Task<CategoryReadDto> CreateAsync(
+            CategoryCreateDto category,
+            string imageUrl = null
+        )
         {
-            var foundName = await _categoryRepository.GetByNameAsync(category.Name);
+            var foundName = await _categoryRepository.GetByNameAsync(category.CategoryName);
             if (foundName != null)
             {
                 throw CustomException.BadRequest($"Invalid category name");
             }
             var mappedCategory = _mapper.Map<CategoryCreateDto, Category>(category);
+            mappedCategory.CategoryUrl = imageUrl;
+
             var createdCategory = await _categoryRepository.CreateAsync(mappedCategory);
             return _mapper.Map<Category, CategoryReadDto>(createdCategory);
         }
@@ -92,7 +97,7 @@ namespace Backend_Teamwork.src.Services.category
         public async Task<CategoryReadDto> UpdateAsync(Guid id, CategoryUpdateDto category)
         {
             var foundCategory = await _categoryRepository.GetByIdAsync(id);
-            var foundName = await _categoryRepository.GetByNameAsync(category.Name);
+            var foundName = await _categoryRepository.GetByNameAsync(category.CategoryName);
             if (foundCategory == null)
             {
                 throw CustomException.NotFound($"Category with id: {id} not found");

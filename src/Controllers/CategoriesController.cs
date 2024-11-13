@@ -1,7 +1,7 @@
-using System.Text.Json;
-using Backend_Teamwork.src.Entities;
 using Backend_Teamwork.src.Services.category;
 using Backend_Teamwork.src.Utils;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Backend_Teamwork.src.DTO.CategoryDTO;
@@ -13,10 +13,12 @@ namespace Backend_Teamwork.src.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly Cloudinary _cloudinary;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CategoriesController(ICategoryService categoryService, Cloudinary cloudinary)
         {
             _categoryService = categoryService;
+            _cloudinary = cloudinary;
         }
 
         [HttpGet]
@@ -59,11 +61,34 @@ namespace Backend_Teamwork.src.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CategoryReadDto>> CreateCategory(
-            [FromBody] CategoryCreateDto categoryDTO
+            [FromForm] CategoryCreateDto categoryDTO,
+            [FromForm] IFormFile CategoryUrl
         )
         {
-            var category = await _categoryService.CreateAsync(categoryDTO);
+            // Handle image upload
+            string imageUrl = null;
+            if (CategoryUrl != null)
+            {
+                imageUrl = await UploadImageAsync(CategoryUrl, "categories");
+            }
+            else
+            {
+                Console.WriteLine("No image received");
+            }
+            var category = await _categoryService.CreateAsync(categoryDTO, imageUrl);
             return CreatedAtAction(nameof(CreateCategory), new { id = category.Id }, category);
+        }
+
+        private async Task<string> UploadImageAsync(IFormFile image, string folder)
+        {
+            var uploadResult = await _cloudinary.UploadAsync(
+                new ImageUploadParams
+                {
+                    File = new FileDescription(image.FileName, image.OpenReadStream()),
+                    Folder = folder,
+                }
+            );
+            return uploadResult?.SecureUrl?.ToString();
         }
 
         [HttpPut("{id}")]
@@ -84,7 +109,5 @@ namespace Backend_Teamwork.src.Controllers
             await _categoryService.DeleteAsync(id);
             return NoContent();
         }
-
-
     }
 }

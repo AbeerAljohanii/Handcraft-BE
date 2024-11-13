@@ -35,8 +35,8 @@ namespace Backend_Teamwork.src.Entities
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
 
+        public string? ArtworkUrl { get; set; }
         // OrderDetails
         public List<OrderDetails>? OrderDetails { get; set; }
-
     }
 }

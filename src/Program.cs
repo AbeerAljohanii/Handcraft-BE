@@ -96,6 +96,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ArtistOnly", policy => policy.RequireRole("Artist"));
 });
 
+builder.Services.AddCloudinary(builder.Configuration);
+
 //add controllers
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

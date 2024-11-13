@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using Backend_Teamwork.src.Services.artwork;
 using Backend_Teamwork.src.Utils;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Backend_Teamwork.src.DTO.ArtworkDTO;
@@ -12,11 +14,13 @@ namespace Backend_Teamwork.src.Controllers
     public class ArtworksController : ControllerBase
     {
         private readonly IArtworkService _artworkService;
+        private readonly Cloudinary _cloudinary;
 
         // Constructor
-        public ArtworksController(IArtworkService service)
+        public ArtworksController(IArtworkService service, Cloudinary cloudinary)
         {
             _artworkService = service;
+            _cloudinary = cloudinary;
         }
 
         // Create
@@ -24,7 +28,8 @@ namespace Backend_Teamwork.src.Controllers
         [HttpPost]
         [Authorize(Roles = "Artist")]
         public async Task<ActionResult<ArtworkReadDto>> CreateOne(
-            [FromBody] ArtworkCreateDto createDto
+            [FromForm] ArtworkCreateDto createDto,
+            [FromForm] IFormFile ArtworkUrl
         )
         {
             // extract user information
@@ -36,9 +41,37 @@ namespace Backend_Teamwork.src.Controllers
             // string => guid
             var userGuid = new Guid(userId);
 
-            var createdArtwork = await _artworkService.CreateOneAsync(userGuid, createDto);
+            // Handle image upload
+            string imageUrl = null;
+            if (ArtworkUrl != null)
+            {
+                imageUrl = await UploadImageAsync(ArtworkUrl, "artworks");
+            }
+            else
+            {
+                Console.WriteLine("No image received");
+            }
+
+            // Create artwork with the image URL if image is uploaded
+            var createdArtwork = await _artworkService.CreateOneAsync(
+                userGuid,
+                createDto,
+                imageUrl
+            );
             //return Created(url, createdArtwork);
             return Ok(createdArtwork);
+        }
+
+        private async Task<string> UploadImageAsync(IFormFile image, string folder)
+        {
+            var uploadResult = await _cloudinary.UploadAsync(
+                new ImageUploadParams
+                {
+                    File = new FileDescription(image.FileName, image.OpenReadStream()),
+                    Folder = folder,
+                }
+            );
+            return uploadResult?.SecureUrl?.ToString();
         }
 
         // Get all

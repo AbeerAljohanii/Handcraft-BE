@@ -10,7 +10,7 @@ namespace Backend_Teamwork.src.Services.category
         Task<CategoryReadDto> GetByNameAsync(string name);
         Task<List<CategoryReadDto>> GetWithPaginationAsync(PaginationOptions paginationOptions);
         Task<List<CategoryReadDto>> SortByNameAsync();
-        Task<CategoryReadDto> CreateAsync(CategoryCreateDto category);
+        Task<CategoryReadDto> CreateAsync(CategoryCreateDto category, string imageUrl);
         Task<CategoryReadDto> UpdateAsync(Guid id, CategoryUpdateDto category);
         Task DeleteAsync(Guid id);
     }

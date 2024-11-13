@@ -33,6 +33,8 @@ namespace Backend_Teamwork.src.DTO
 
             [Required(ErrorMessage = "Category Id shouldn't be null")]
             public Guid CategoryId { get; set; }
+
+            public string? ArtworkUrl { get; set; }
         }
 
         // List of Artworks
@@ -53,6 +55,7 @@ namespace Backend_Teamwork.src.DTO
             public DateTime CreatedAt { get; set; }
             public Category Category { get; set; }
             public UserReadDto User { get; set; }
+            public string ArtworkUrl { get; set; }
         }
 
         // DTO for updating an existing Artwork
@@ -78,6 +81,8 @@ namespace Backend_Teamwork.src.DTO
             public decimal? Price { get; set; }
 
             public Guid? CategoryId { get; set; }
+
+            public string? ArtworkUrl { get; set; }
         }
     }
 }

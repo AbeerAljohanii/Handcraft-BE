@@ -5,7 +5,7 @@ namespace Backend_Teamwork.src.Services.artwork
 {
     public interface IArtworkService
     {
-        Task<ArtworkReadDto> CreateOneAsync(Guid userId, ArtworkCreateDto artwork);
+        Task<ArtworkReadDto> CreateOneAsync(Guid userId, ArtworkCreateDto artwork, string imageUrl);
         Task<List<ArtworkReadDto>> GetAllAsync(PaginationOptions paginationOptions);
         Task<int> GetTotalArtworksCountAsync();
         Task<ArtworkReadDto> GetByIdAsync(Guid id);

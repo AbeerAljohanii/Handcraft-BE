@@ -27,7 +27,11 @@ namespace Backend_Teamwork.src.Services.artwork
             _mapper = mapper;
         }
 
-        public async Task<ArtworkReadDto> CreateOneAsync(Guid artistId, ArtworkCreateDto createDto)
+        public async Task<ArtworkReadDto> CreateOneAsync(
+            Guid artistId,
+            ArtworkCreateDto createDto,
+            string imageUrl = null
+        )
         {
             var foundCategory = await _categoryRepo.GetByIdAsync(createDto.CategoryId);
             if (foundCategory == null)
@@ -38,6 +42,7 @@ namespace Backend_Teamwork.src.Services.artwork
             }
             var artwork = _mapper.Map<ArtworkCreateDto, Artwork>(createDto);
             artwork.UserId = artistId;
+            artwork.ArtworkUrl = imageUrl;
             var createdArtwork = await _artworkRepo.CreateOneAsync(artwork);
             return _mapper.Map<Artwork, ArtworkReadDto>(createdArtwork);
         }
