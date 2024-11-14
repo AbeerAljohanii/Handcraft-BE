@@ -56,7 +56,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000") // later when i deployed FE, i need to add it here
+                .WithOrigins("http://localhost:3000", "https://handcraft-fe.onrender.com")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .SetIsOriginAllowed((host) => true)
