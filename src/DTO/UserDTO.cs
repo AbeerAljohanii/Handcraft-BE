@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Backend_Teamwork.src.Utils;
+using ecommerce.src.Utils;
 using static Backend_Teamwork.src.Entities.User;
 
 namespace Backend_Teamwork.src.DTO
@@ -13,7 +15,7 @@ namespace Backend_Teamwork.src.DTO
                 MinLength(2, ErrorMessage = "Name should be at at least 2 characters"),
                 MaxLength(10, ErrorMessage = "Name shouldn't be more than 10 characters")
             ]
-            public string? Name { get; set; }
+            public string Name { get; set; }
 
             [
                 Required(ErrorMessage = "Phone number shouldn't be null"),
@@ -22,7 +24,7 @@ namespace Backend_Teamwork.src.DTO
                     ErrorMessage = "Phone number should be a valid Saudi phone number"
                 )
             ]
-            public string? PhoneNumber { get; set; }
+            public string PhoneNumber { get; set; }
 
             [
                 Required(ErrorMessage = "Email shouldn't be null"),
@@ -30,10 +32,8 @@ namespace Backend_Teamwork.src.DTO
             ]
             public string Email { get; set; }
 
-            [
-                Required(ErrorMessage = "Password shouldn't be null"),
-                MinLength(8, ErrorMessage = "Password should be at at least 8 characters")
-            ]
+            [Required(ErrorMessage = "Password shouldn't be null")]
+            [PasswordComplexity]
             public string Password { get; set; }
 
             [Required(ErrorMessage = "Role shouldn't be null")]
@@ -69,35 +69,29 @@ namespace Backend_Teamwork.src.DTO
         }
 
         // DTO for updating an existing User (including Artist)
+        [AtLeastOneRequired(ErrorMessage = "At least one property must be updated.")]
         public class UserUpdateDto
         {
             [
-                Required(ErrorMessage = "Name shouldn't be null"),
                 MinLength(2, ErrorMessage = "Name should be at at least 2 characters"),
                 MaxLength(10, ErrorMessage = "Name shouldn't be more than 10 characters")
             ]
             public string? Name { get; set; }
 
-            [
-                Required(ErrorMessage = "Phone number shouldn't be null"),
-                RegularExpression(
-                    @"^\+966[5][0-9]{8}$",
-                    ErrorMessage = "Phone number should be a valid Saudi phone number"
-                )
-            ]
+            [RegularExpression(
+                @"^\+966[5][0-9]{8}$",
+                ErrorMessage = "Phone number should be a valid Saudi phone number"
+            )]
             public string? PhoneNumber { get; set; }
 
-            [
-                Required(ErrorMessage = "Email shouldn't be null"),
-                EmailAddress(ErrorMessage = "Email should be with right format: @gmail.com")
-            ]
-            public string Email { get; set; }
+            [EmailAddress(ErrorMessage = "Email should be with right format: @gmail.com")]
+            public string? Email { get; set; }
 
-            [
-                Required(ErrorMessage = "Password shouldn't be null"),
-                MinLength(8, ErrorMessage = "Password should be at at least 8 characters"),
-            ]
-            public string Password { get; set; }
+            [PasswordComplexity]
+            public string? Password { get; set; }
+
+            [MinLength(2, ErrorMessage = "Description should be at at least 2 characters")]
+            public string? Description { get; set; }
         }
     }
 }

@@ -83,15 +83,15 @@ namespace Backend_Teamwork.src.Controllers
         }
 
         // PUT: api/v1/orders/{id}
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")] // Accessible by Admin
         public async Task<ActionResult<bool>> UpdateOrder(
             [FromRoute] Guid id,
             [FromBody] OrderUpdateDto updateDto
         )
         {
-            var isUpdated = await _orderService.UpdateOneAsync(id, updateDto);
-            return Ok(isUpdated);
+            await _orderService.UpdateOneAsync(id, updateDto);
+            return NoContent();
         }
 
         // DELETE: api/v1/orders/{id}

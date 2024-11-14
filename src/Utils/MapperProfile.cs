@@ -1,6 +1,5 @@
 using AutoMapper;
 using Backend_Teamwork.src.Entities;
-using Backend_Teamwork.src.Repository;
 using static Backend_Teamwork.src.DTO.ArtworkDTO;
 using static Backend_Teamwork.src.DTO.BookingDTO;
 using static Backend_Teamwork.src.DTO.CategoryDTO;
@@ -19,6 +18,10 @@ namespace Backend_Teamwork.src.Utils
             CreateMap<User, UserReadDto>();
             CreateMap<UserCreateDto, User>();
             CreateMap<UserUpdateDto, User>()
+                .ForMember(
+                    dest => dest.Description,
+                    opt => opt.Condition(src => src.Description != null)
+                )
                 .ForAllMembers(opts =>
                     opts.Condition((src, dest, srcProperty) => srcProperty != null)
                 );
@@ -37,7 +40,8 @@ namespace Backend_Teamwork.src.Utils
                     opts.Condition((src, dest, srcProperty) => srcProperty != null)
                 );
 
-            CreateMap<Order, OrderReadDto>();
+            CreateMap<Order, OrderReadDto>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
             CreateMap<OrderCreateDto, Order>();
             CreateMap<OrderUpdateDto, Order>()
                 .ForAllMembers(opts =>

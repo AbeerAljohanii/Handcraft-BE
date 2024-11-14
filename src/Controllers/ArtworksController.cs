@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using Backend_Teamwork.src.DTO;
-using Backend_Teamwork.src.Entities;
 using Backend_Teamwork.src.Services.artwork;
 using Backend_Teamwork.src.Utils;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Backend_Teamwork.src.DTO.ArtworkDTO;
@@ -14,11 +14,13 @@ namespace Backend_Teamwork.src.Controllers
     public class ArtworksController : ControllerBase
     {
         private readonly IArtworkService _artworkService;
+        private readonly Cloudinary _cloudinary;
 
         // Constructor
-        public ArtworksController(IArtworkService service)
+        public ArtworksController(IArtworkService service, Cloudinary cloudinary)
         {
             _artworkService = service;
+            _cloudinary = cloudinary;
         }
 
         // Create
@@ -26,7 +28,8 @@ namespace Backend_Teamwork.src.Controllers
         [HttpPost]
         [Authorize(Roles = "Artist")]
         public async Task<ActionResult<ArtworkReadDto>> CreateOne(
-            [FromBody] ArtworkCreateDto createDto
+            [FromForm] ArtworkCreateDto createDto,
+            [FromForm] IFormFile ArtworkUrl
         )
         {
             // extract user information
@@ -38,19 +41,68 @@ namespace Backend_Teamwork.src.Controllers
             // string => guid
             var userGuid = new Guid(userId);
 
-            var createdArtwork = await _artworkService.CreateOneAsync(userGuid, createDto);
+            // Handle image upload
+            string imageUrl = null;
+            if (ArtworkUrl != null)
+            {
+                imageUrl = await UploadImageAsync(ArtworkUrl, "artworks");
+            }
+            else
+            {
+                Console.WriteLine("No image received");
+            }
+
+            // Create artwork with the image URL if image is uploaded
+            var createdArtwork = await _artworkService.CreateOneAsync(
+                userGuid,
+                createDto,
+                imageUrl
+            );
             //return Created(url, createdArtwork);
             return Ok(createdArtwork);
+        }
+
+        private async Task<string> UploadImageAsync(IFormFile image, string folder)
+        {
+            var uploadResult = await _cloudinary.UploadAsync(
+                new ImageUploadParams
+                {
+                    File = new FileDescription(image.FileName, image.OpenReadStream()),
+                    Folder = folder,
+                }
+            );
+            return uploadResult?.SecureUrl?.ToString();
         }
 
         // Get all
         // End-Point: api/v1/artworks
         [HttpGet]
-        public async Task<ActionResult<List<ArtworkReadDto>>> GetAll(
+        public async Task<ActionResult<List<ArtworksListDto>>> GetAll(
             [FromQuery] PaginationOptions paginationOptions
         )
         {
             var artworkList = await _artworkService.GetAllAsync(paginationOptions);
+            var totalCount = await _artworkService.GetTotalArtworksCountAsync();
+            var response = new ArtworksListDto { Artworks = artworkList, TotalCount = totalCount };
+            return Ok(response);
+        }
+
+        // Get all artworks for the currently logged-in artist
+        // End-Point: api/v1/artworks/my-artworks
+        [HttpGet("my-artworks")]
+        [Authorize(Roles = "Artist")]
+        public async Task<ActionResult<List<ArtworkReadDto>>> GetMyArtworks()
+        {
+            // extract user information
+            var authenticateClaims = HttpContext.User;
+            // get user id from claim
+            var userId = authenticateClaims
+                .FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!
+                .Value;
+            // string => guid
+            var userGuid = new Guid(userId);
+
+            var artworkList = await _artworkService.GetByArtistIdAsync(userGuid);
             return Ok(artworkList);
         }
 
@@ -76,7 +128,7 @@ namespace Backend_Teamwork.src.Controllers
 
         // Update
         // End-Point: api/v1/artworks/{id}
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize(Roles = "Admin,Artist")]
         public async Task<ActionResult> UpdateOne(
             [FromRoute] Guid id,

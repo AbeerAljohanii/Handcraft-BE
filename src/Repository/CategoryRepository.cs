@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
 using Backend_Teamwork.src.Database;
 using Backend_Teamwork.src.Entities;
 using Backend_Teamwork.src.Utils;
@@ -33,21 +28,25 @@ namespace Backend_Teamwork.src.Repository
 
         public async Task<Category?> GetByNameAsync(string name)
         {
-            return await _category.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
+            return await _category.FirstOrDefaultAsync(c =>
+                c.CategoryName.ToLower() == name.ToLower()
+            );
         }
 
-        public async Task<List<Category>> GetWithPaginationAsync(PaginationOptions paginationOptions)
+        public async Task<List<Category>> GetWithPaginationAsync(
+            PaginationOptions paginationOptions
+        )
         {
             return await _category
                 .Skip((paginationOptions.PageNumber - 1) * paginationOptions.PageSize)
                 .Take(paginationOptions.PageSize)
-                .OrderBy(c => c.Name)
+                .OrderBy(c => c.CategoryName)
                 .ToListAsync();
         }
 
         public async Task<List<Category>> SortByNameAsync()
         {
-            return await _category.OrderBy(c => c.Name).ToListAsync();
+            return await _category.OrderBy(c => c.CategoryName).ToListAsync();
         }
 
         public async Task<Category> CreateAsync(Category category)

@@ -213,7 +213,7 @@ namespace Backend_Teamwork.src.Services.order
             {
                 throw CustomException.NotFound("Orders not found");
             }
-            var sortedOrders=orders.OrderBy(x => x.CreatedAt).ToList();
+            var sortedOrders = orders.OrderBy(x => x.CreatedAt).ToList();
             return _mapper.Map<List<Order>, List<OrderReadDto>>(sortedOrders);
         }
     }

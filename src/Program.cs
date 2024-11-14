@@ -8,13 +8,12 @@ using Backend_Teamwork.src.Services.artwork;
 using Backend_Teamwork.src.Services.booking;
 using Backend_Teamwork.src.Services.category;
 using Backend_Teamwork.src.Services.order;
-using Backend_Teamwork.src.Services.payment;
 using Backend_Teamwork.src.Services.user;
 using Backend_Teamwork.src.Services.workshop;
 using Backend_Teamwork.src.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using static Backend_Teamwork.src.Entities.User;
@@ -22,16 +21,20 @@ using static Backend_Teamwork.src.Entities.User;
 var builder = WebApplication.CreateBuilder(args);
 
 //connect to database
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(
+NpgsqlDataSourceBuilder dataSourceBuilder = new NpgsqlDataSourceBuilder(
     builder.Configuration.GetConnectionString("Local")
 );
 dataSourceBuilder.MapEnum<UserRole>();
 dataSourceBuilder.MapEnum<Status>();
 
+builder.Services.AddSingleton(dataSourceBuilder);
+
 //add database connection
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseNpgsql(dataSourceBuilder.Build());
+    options.ConfigureWarnings(x => x.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning));
 });
 
 //add auto-mapper
@@ -45,8 +48,22 @@ builder.Services.AddScoped<IOrderService, OrderService>().AddScoped<OrderReposit
 builder.Services.AddScoped<IWorkshopService, WorkshopService>().AddScoped<WorkshopRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>().AddScoped<BookingRepository>();
 
-//builder.Services.AddScoped<IPaymentService, IPaymentService>().AddScoped<PaymentRepository>();
-
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000") // later when i deployed FE, i need to add it here
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed((host) => true)
+                .AllowCredentials();
+        }
+    );
+});
 
 //add logic for authentication
 builder
@@ -76,7 +93,10 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"));
+    options.AddPolicy("ArtistOnly", policy => policy.RequireRole("Artist"));
 });
+
+builder.Services.AddCloudinary(builder.Configuration);
 
 //add controllers
 builder.Services.AddControllers();
@@ -123,6 +143,7 @@ app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors(MyAllowSpecificOrigins); // cors
 
 //use controllers
 app.MapControllers();

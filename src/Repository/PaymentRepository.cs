@@ -1,6 +1,5 @@
 using Backend_Teamwork.src.Database;
 using Backend_Teamwork.src.Entities;
-using Backend_Teamwork.src.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend_Teamwork.src.Repository

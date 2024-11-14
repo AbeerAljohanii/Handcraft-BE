@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Backend_Teamwork.src.Entities;
 using Backend_Teamwork.src.Services.workshop;
 using Backend_Teamwork.src.Utils;
 using Microsoft.AspNetCore.Authorization;

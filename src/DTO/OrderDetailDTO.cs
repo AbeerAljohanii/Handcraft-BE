@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Backend_Teamwork.src.Entities;
 using static Backend_Teamwork.src.DTO.ArtworkDTO;
 
 namespace Backend_Teamwork.src.DTO

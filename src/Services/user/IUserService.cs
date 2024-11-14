@@ -6,12 +6,12 @@ namespace Backend_Teamwork.src.Services.user
     public interface IUserService
     {
         // Get all
-        Task<List<UserReadDto>> GetAllAsync();
+        Task<List<UserReadDto>> GetAllAsync(PaginationOptions paginationOptions);
 
-        Task<List<UserReadDto>> GetUsersByPage(PaginationOptions paginationOptions);
+        // Task<List<UserReadDto>> GetUsersByPage(PaginationOptions paginationOptions);
 
         // create
-        Task<UserReadDto> CreateOneAsync(UserCreateDto createDto);
+        Task<UserReadDto> CreateOneAsync(UserCreateDto createDto, bool skipRoleCheck);
 
         // Get by id
         //Task<UserReadDto> GetOneByIdAsync(Guid userId);

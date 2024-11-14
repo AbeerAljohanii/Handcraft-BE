@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+using ecommerce.src.Utils;
 
 namespace Backend_Teamwork.src.Entities
 {
@@ -34,10 +30,8 @@ namespace Backend_Teamwork.src.Entities
         ]
         public string Email { get; set; }
 
-        [
-            Required(ErrorMessage = "Password shouldn't be null."),
-            MinLength(8, ErrorMessage = "Password should be at at least 8 characters")
-        ]
+        [Required(ErrorMessage = "Password shouldn't be null")]
+        [PasswordComplexity]
         public string Password { get; set; }
         public string? Description { set; get; }
 

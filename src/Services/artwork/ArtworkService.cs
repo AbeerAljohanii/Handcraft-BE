@@ -3,7 +3,6 @@ using Backend_Teamwork.src.Entities;
 using Backend_Teamwork.src.Repository;
 using Backend_Teamwork.src.Utils;
 using static Backend_Teamwork.src.DTO.ArtworkDTO;
-using static Backend_Teamwork.src.DTO.UserDTO;
 using static Backend_Teamwork.src.Entities.User;
 
 namespace Backend_Teamwork.src.Services.artwork
@@ -28,15 +27,22 @@ namespace Backend_Teamwork.src.Services.artwork
             _mapper = mapper;
         }
 
-        public async Task<ArtworkReadDto> CreateOneAsync(Guid artistId, ArtworkCreateDto createDto)
+        public async Task<ArtworkReadDto> CreateOneAsync(
+            Guid artistId,
+            ArtworkCreateDto createDto,
+            string imageUrl = null
+        )
         {
             var foundCategory = await _categoryRepo.GetByIdAsync(createDto.CategoryId);
             if (foundCategory == null)
             {
-                throw CustomException.NotFound($"Category with id: {createDto.CategoryId} not found");
+                throw CustomException.NotFound(
+                    $"Category with id: {createDto.CategoryId} not found"
+                );
             }
             var artwork = _mapper.Map<ArtworkCreateDto, Artwork>(createDto);
             artwork.UserId = artistId;
+            artwork.ArtworkUrl = imageUrl;
             var createdArtwork = await _artworkRepo.CreateOneAsync(artwork);
             return _mapper.Map<Artwork, ArtworkReadDto>(createdArtwork);
         }
@@ -54,12 +60,36 @@ namespace Backend_Teamwork.src.Services.artwork
                 throw CustomException.BadRequest("PageNumber should be greater than 0.");
             }
 
+            if (paginationOptions.LowPrice < 0)
+            {
+                throw CustomException.BadRequest("LowPrice should be greater than or equal to 0.");
+            }
+
+            if (paginationOptions.HighPrice > decimal.MaxValue)
+            {
+                throw CustomException.BadRequest(
+                    $"HighPrice should be less than or equal to {decimal.MaxValue}."
+                );
+            }
+
+            if (paginationOptions.LowPrice > paginationOptions.HighPrice)
+            {
+                throw CustomException.BadRequest(
+                    "LowPrice should be less than or equal to HighPrice."
+                );
+            }
+
             var artworkList = await _artworkRepo.GetAllAsync(paginationOptions);
             if (artworkList == null || !artworkList.Any())
             {
                 throw CustomException.NotFound("No artworks found.");
             }
             return _mapper.Map<List<Artwork>, List<ArtworkReadDto>>(artworkList);
+        }
+
+        public async Task<int> GetTotalArtworksCountAsync()
+        {
+            return await _artworkRepo.GetCountAsync();
         }
 
         public async Task<ArtworkReadDto> GetByIdAsync(Guid id)
