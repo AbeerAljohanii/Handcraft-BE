@@ -166,7 +166,7 @@ The API will be available at: `http://localhost:5125`
 
 ## 🌐 Deployment
 
-The application is deployed and can be accessed at: [https://sda-3-online-backend-teamwork-yjdp.onrender.com](https://sda-3-online-backend-teamwork-yjdp.onrender.com/)
+The application is deployed and can be accessed at: [https://handcraft-be.onrender.com](https://handcraft-be.onrender.com)
 
 ## 👩‍💻 Team Members
 
